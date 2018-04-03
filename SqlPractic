@@ -1,0 +1,100 @@
+1:SQL  主要分为数据操作语言DML(查询+更新) 和数据定义语言 DDL
+2:DML查询和更新：select; update; delete; insert into
+3: DDL:CREATE DATABASE ;ALTER DATABASE;CREATE TABLE;ALTER TABLE;DROP TABLE;CREATE INDEX;DROP INDEX
+4:条件值周围使用的是单引号来围绕文本值，，如果是数值，不要使用引号。
+5:and或者or运算符在where语句中把两个或者多个条件结合起来：and 是两个条件都要成立，如果or只要其中一个语句成立即可满足条件。
+6:order by根据指定的列进行排序 order by company 默认是生序排列；可添加两个字段进行排序，比如order by company，number 即以字母顺序显示公司名称，并以数字顺序显示顺序号；order by company desc 以降序排列 order by comapny desc，number asc表示以降序排列公司名，，生序排列顺序号
+7:inser into 表名 values（值1，值2 。。。）；或者指定列添加数据：inser into 表名（列1，列2）values（值1，值2）
+8:update 用于修改表中的数据： update 表名称 set 列名称=新值 where 列名称=某值 也可以一次修改多个列内容 比如 uodate 表名称 set 列名称=新值；列名称2=新值 where 列名称=某值；
+9:delete语句：delete from 表名 where 列名称=值 某一列会被删除 ；delete from 表名：删除所有行
+10:SQL TOP： select top 2* from Persons ;拿出前两条 数据； select top 5 percent *from persons，拿出前百分之50的数据
+
+11:SQL LIKE:like操作符作用于where字句中 搜索列中的指定模式 如：select 列名 from 表名 where 列名like pattern ，select * from persons where city like ‘n%’  选取出以“n”开始的城市里的人；%可用于定义通配符（模式中缺少的字母）；select * from persons where city like ‘%g’，select出城市是以g结尾的人的信息，select *from persons where city like ‘%lon% ：居住地包含“lon”的城市里的人；not like ‘%lon%’
+
+12:SQL通配符：必须与like运算符一起使用：like：替代一个或者多个字符 ；_仅替代一个字符 [charlist] : 字符列中的任何单一字符 [^charlist]或者[!charlist]不在字符列中的任何单一字符
+
+13:SQL IN 操作符：允许我们在where 字句中规定多个值 select column_name(s) from table_name where column_name IN (value1,value2,...) 
+
+14:BETWEEN:betweeen ...and 会选取介于两个值之间的数据范围，这些值可以是数值，文本或者日期：select column（s）from table_name where column_name between value1 and value2
+
+15:JOIN :join ,left join.right join,full join
+
+16:INNER JOIN 与join相同:在表中存在至少一个匹配时，inner join关键字返回行
+17:Union  操作符：用于合并两个或者多个select语句的结果集（UNION内部的select语句必须拥有相同数量的列，列也必须拥有相似的数据类型，同时，每天select语句中的列顺序必须相同）相同列名的会只显示一个，并且两个查询内容以上下排列连接
+
+18:SELECT INTO :用于创建表的备份复件，从一个表中选取数据，然后把数据插入到另一个表中。select into newtable_name[IN externaldatabase] from old_tablename 2:如果我们只希望其中的列插进新表 select column_name(s) into newtable_name[in externaldatabase] from old_tablename  也可以在后面加上条件语句；当然也可以把两个join的表的信息保存到新表中
+
+19:约束：unique，not null，primary key ，foreign key，default
+
+
+
+HiveQL:
+  1:database包括两个 default（没指明创建的数据库则放在default里） 和 其他（用户创建的）
+
+  2:Hive的数据类型包括基本数据类型和集合数据类型（ARRAY,STRUCT,MAP）,基本数据类型与java中的api借口对应，TIMESTAMP数据类型表示的是utc时间即协调世界时，中国时间是utc+8，
+  3:两个数据类型做对比，hive会隐式的将类型转换为两个整型类型中值较大的那个类型，如果用户想将一个string 类型的转换成int类型的，则需要通过显示转换 ...case(s AS INT) 例如：select case（column_name AS INT）from table_name
+  4:STRUCT类型的数据可以通过  字段名.first  来引用该字段中第一个元素，例如：addr  STRUCT <stree:STRING,city:String,state:STRING>   字段名.last 来引用该字段中的最后一个元素，或者 字段名.stree 来引用地址字段中的街道信息
+  5:MAP<STRING,INT>  使用数组表示法例如定义了一个deductions MAP<STRING,INT> , 可以用字段名['key'] 来表示比如 deductions['国税']
+  6:subordinates ARRAY<STRING>,用字段名[0],比如 subordinates[0]
+  7:传统数据库不支持这样破坏标准格式的数据类型，而大数据系统中，不遵循标准格式可以提供更高吞吐量的数据
+  8:HIVE中的分隔符：行分割符用"\n" ,列分隔符用"^A"或者"\001"; STRUCT或者 ARRAY的分隔符为"\B"或者'\002' ;MAP中的分隔符为'\ C'或者'\003'
+  9:创建表格的设定分隔符，  ROW FORMAT DELIMITED FIELDS TERMINATED BY '\001'    COLLECTION ITEMS TERMINATED BY '\002'    MAP KEYS TERMINATED BY '\003' LINES TERMINATED BY '\N' STORED AS TEXTFILE;
+  10: 读时模式：hive在数据加载的时候不会进行验证检查，只有在查询的时候才会进行；写时模式：传统数据库在写入数据的hi 时候就模式进行检查
+  11:HIVE不支持行级的插入操作，更新操作和删除操作，也不支持事务
+  12:创建表时，如果用户么有显式指定数据库，那么就会使用默认的数据库default
+  13:一个数据库就是一个目录，而表是其中的子目录
+  14:创建列的时候可以加入COMMENT '....'增加对表的某一列或者表的整理进行描述，也可以对数据库进行描述，常用的命令 show datebases /tables ，descriple table/datebase extended tablename/datebasename
+  15:数据库中如果有表格或者数据不能直接删除数据库，要先将里面的表删掉才可以删除，可以用 DROP DATABASE IF EXISTS db_name CASCADE 会自动先删除表然后删除数据库
+  16:修改数据库：为数据库设置属性： ALTER DATABASE mydb SET DBPROPERTIES('creator'='wang','creatortim'e='ccc')
+  17:创建表的时候可以添加列描述，或者表描述 COMMENT ;  可以设置分隔符等；可以添加表属性 TBLPROPERTIES('XX'='...','YY'='...'),创建表属性的时候会自动创建两个表属性，last_modified_by 和 last_modified_time;设置location ' ....'
+  18: 拷贝一张已经存在的表：create table if not exists mydb.employees2 like mydb,employee
+  19:show tables in mydb;descriple extended/formatted mydb.employee
+  20:表类型：管理表，外部表，分区表，分桶表
+  21:外部表external创建时设置 LOCATION '...' 可以从外部加载数据 ;分区表通过 PARTITION BY(countr STRING,state STRING);
+  22:show partitons employee
+  23: 没有分区的管理表可以通过加载数据的方式创建分区：load data local inpath ‘。。。’ into table employee PARTITION (country = 'us',state='ca')
+  24:ALTER TABLE 可以单独对外部表进行分区： ALTER TABLE employee ADD PATTITION(YEAR = 2002,MONTH=6,DAY=2) LOCATION '.....'   进行数据的加载
+  25:表的重命名：alter table employee rename to employee2
+  26:修改列信息：alter table employee change column name lastname string comment ‘。。。’ after age
+
+
+HIVEQL: 数据操作DML
+
+   插入数据：
+   1:向管理表中插入数据——LOAD DATA LOCAL INPATH '... '/ INPATH '....'  OVERWRITE INTO TABLE employee  
+   2:HIVE并不会去验证用户装载的数据和表的模式是否匹配；但是会验证文件格式和否和表的结构定义是否一致
+   3:通过查询语句向表中插入数据：INSERT OVERWRITE TABLE emloyee PARTITON(country='US',state='OR') SELECT * FROM staged_employee se where se.cnty='US' AND se.st='OR'；
+   4:动态分区插入：基于查询参数推断出需要创建的分区名称，INSERT OVERWRITE TABLE employee PARTITION(country,state) SELECT ...,se.cnty,se.st FROM staged_employee se;(HIVE根据语句中最后两列确定分区字段country和state的值) ；动态分区功能默认情况呀是没有开启的，开启后，默认是以“严格”模式下执行的
+   5:动态和静态分区插入:INSERT OVERWRITE TABLE employee  PARTITON(country='US',state)  SELECT...,se.cnty,se.st FROM staged_employee se Where se.cnty='US';这种情况 至少要求有一列分区字段是静态的，且静态分区字段必须在动态分区字段之前！
+   6:单个查询语句中创建表并加载数据：  CREATE TABLE employee  AS select name,salary,address FROM stage_employee WHERE se.st='CA';
+   7: 导出数据：如果数据文件恰好是用户需要的格式，只需要hadoop -fs cp xxxpath  uuupath ；否则可以用 INSERT OVERWRITE LOCAL DIRECTORY '/tmp/ca_employees' SELECT name,salary,address FROM employee WHERE se.statu='CA'
+   8:函数：hive内置函数有：基本数学函数；聚合函数；表生成函数；其他内置函数
+   9:limit语句用于限制返回的行数
+   10:什么情况可以避免进行mapreduce：
+          1:hive简单地读取表对应的存储目录下的文件，然后输出格式化后的内容到控制台比如select* from emloyee
+          2:where语句的过滤条件只是分区字段，无论后边是否用limit限制输出记录的条数，都无需mapreduce
+          3:属性hive.exec.mode.local.auto=true的值设置为true，hive会尝试使用本地模式执行其他的操作，否则hive使用mapreduce执行其他所有的查询
+   11:where语句使用为此表达式，不能在where语句中使用列别名
+   12:浮点数的比较：用户写一个浮点数比如0，2默认会保存为double（12位）类型，即0.200000000001，而float类型（7位）=0.20000001，与float比较是实际会小，通常用 cast（xx as float）来进行类型转换，和钱相关的都避免使用浮点数
+   13:LIKE和RLIKE:like可以进行一些简单的字符比配，经常用到%；RLIKE使用的java接口，可以用一些java的正则表达式进行匹配比如'.*(c|b).*' . 代表匹配任意字符， *代表重复“左边的字符串”
+   14:GROUP BY语句：group by语句通常会和聚合函数一起使用，HAVIN和group by ... having ... 允许用户通过一个简单的语法，完成原本需要通过子查询才能对groupby语句产生的分组进行条件过滤的任务
+   15: JOIN:   主要分
+           1: 内连接（inner join .. on..），ON 子句指定了两个表间数据进行连接的条件，但是hive并不支持on进行非等值连接。因为通过mapreduce很难实现这种类型的连接,不支持在on子句中的谓词间使用OR,用户也可以对多张表进行连接操作，即通过多个join  on来进行，hive正常会对每队join对象启动一个mapreduce任务
+           2:LEFT OUTER JOIN : 左外连接通过LEFT OUTER进行标识  hive 编程指南 P104
+           3:OUTER JOIN:对于外连接，不可以把分区过滤条件放置在on语句中，对于外连接会忽略掉分区过滤条件
+           4:RIGHT OUTER JOIN:会返回右边表所有符合where语句的记录，座表匹配不上的字段用null代替
+           5:FULL OUTER JOIN:完全外连接将会返回所有表中符合where语句条件的所有记录，否则就用null替代
+           6:LEFT SEMI-JOIN:左半开连接，会返回左边表的记录，前提是其记录对于右半边表满足on语句中的判定条件，对于常见的内连接来说，这是一个特殊的优化了的情况，对于左边表中一条指定的记录，在右表中一旦找到匹配的记录，hive就会立即停止扫描，select 和where语句中不能引用右边表中的字段
+           7:笛卡尔积JOIN:  在一些情况下还是很有用的，比如推测出用户可能会喜欢那些文章，可以做矩阵列出所有可能，可以生成所有用户对所有网页的对应关系的集合
+           8:map—side JOIN:如果所有表中只有一张小表，那么最大的表通过mapper的时候将小表完全放在内容中，在hive0.7之前想用的话要在查询语句中增加一个标记来进行触发； SELECT /*+MAPJOIN(d)*/  s.ymd,s.price_close,d.dividend from stocks s join dividends d on s.ymd=d.ymd and s.sysbol=d.sysbol where s.system='aapl';  从0.7以后，废弃了这种标记的方式，如果用标记方式也是有效的，如果不增加标记，需要设置属性 hive.auto.convert.JOIN 的值为true，这样hive就会在有必要的时候启动你这个优化，默认为false；也可以配置这个模式的表大小的标准，hive.mapjoin.smalltable.filesize=25000000 ,单位是字节 ；如果用户期望hive在必要的时候自动启动这个优化的话，可以将一个或者两个属性设置在 $HOME/.hiverc 文件中；
+              hive对于右外连接和全外连接不支持这个优化
+              如果表中的数据是分桶的，那么对于大表，在特定情况下也可以使用这个优化，表中的数据必须是按照on语句中的键进行分桶的，其中一张表的粪桶个数必须是另一张表分桶个数的若干倍，满足这些条件，hive可以在map阶段按照分桶数据进行连接，因此不需要先获取一张表的所有数据再和另一张表进行连接，需要设置参数开启：hive.optimize.buchetmapJOIN=true;如果分桶表都具有相同的粪桶书，而且数据是按照连续键或者桶的键进行排序的，那么hive可以执行一个更快的分类-合并连接 sort-merge JOIN ,这个优化也需要设置属性才能开启p110
+     16:order by ：hive中的order by会对查询结果集执行一个全局排序，也就是说所有的数据都通过一个reducer进行排序处理，如果设置为严格模式，即hive.mapred.mod=strit ,则order by 语句后面必须要加上limit进行限制
+     17:sort by：只会在每个reducer中对数据进行排序，执行一个局部排序，，可以保证每个reducer输出的数据都是有序的，可以提高后面进行的全局排序的效率
+     18:含有sort by的DISTRIBUTE BY ;distribute by控制map的输出在reducer中如何划分的，比如我们可以查询同一天的数据，我们可以用distribute by date 将同一天的数据从map端放到同一个reducer中，然后再进行order by进行排序，这样输出数据后，同一天的数据进行了排序的输出；distribute by要放在sort by之前
+    19:cluster by：如果distribute by c.date sort by c.date ,即后面排序的字段相同，则可以用cluster by c.date 直接来代替;注意distrubute by 。。sort by 或者cluster by会剥夺sort by的并行性，然而数显输出的文件的数据都是全局排序的
+    20:类型转换：cast (value AS TYPE) 例如 cast（salary as FLOAT）如果salary字段的值不是合法的浮点型字符串，hive会返回null；浮点数转换成整数推荐用round（）或者floor（）；
+    21:抽样查询：hive可以对表进行分桶抽样来满足抽样查询 例如 select * from number TABLESAMPLE(BUCKET 3 OUT OF 10 ON rand()) ;意思是将数据按照on后面指定的参数或者列  分为十个桶，抽取其中三个桶的数据
+    22：数据块抽样：数据块百分比进行抽样：select * from numbersflat TABLESAMPLE(0.1 PERCENT)   注意：这样抽样的最小单元是一个hdfs数据块，如果数据大小小聚普通数据块大小128m的化，那么将会返回所有行
+    23:union all :可以将两个或者多个表进行合并，每一个union子查询都必须具有相同的列，每个字段的字段类型必须是一致的
+insert into table employees values("wangxiaodong",18,4000.5,Array("xiaodongya"),Map("国税",0.05),Struct("xinghong","weihai","shandong",3))

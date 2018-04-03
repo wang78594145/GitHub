@@ -1,0 +1,50 @@
+
+第一章：
+1:跟java不同的是，scala的数据类型都是类
+2:在Scala中，我们用方法，而不是强制类型转换，来做数值类型之间的转换
+3:Scala中的操作符实际上是方法，比如＋—＝等等
+4:Scala里没有提供＋＋或者———的操作符，我们需要用＋＝1或者－＋1来代替
+5:使用Scala开头的包时，我么可以省区Scala，例如import scala。math._ 写成import math._
+6:不带参数的方法通常不使用圆括号比如“helloworld”.distinct
+7:"hello"(4),bigInt(123456789),Array(1,4,8,16),都是使用他们的apply（）方法
+
+第二章：
+1:if表达式有值，可以将if表达式的值赋给变量，如：val a＝if（x>o）1 else -1等同于if（）if（x>o）a＝1 else a＝-1
+2:可以把（）比作“无有用值”的占位符，将unit当作java中的void
+3:块表达式的最后一个表达式是块的值，例如val distanc＝｛val dx＝x－x0；val dy＝y－y0；sqrt（dx＊dx＋dy＊dy｝
+4:赋值动作本身是没有值的，比如一个以赋值语句结束的代码块，比如｛r＝r＊n；n－＝1｝这个值为unit所以不能用来给变量赋值，x＝y＝1，y＝1的值为（），所以x＝（）
+5: 对于递归函数，必须要指定函数的返回值类型
+6:我们用 :_* 来将它转换成参数序列,如def sum（args：Int*）={var result=0;for(arg<-args) result+=arg;result}  我们可以只在函数里面传一个整数比如 sum（5），但是不能传入sum（1 to 5），可以传入sum（1 to 5:_*）
+7:没有返回值的函数，可以不加＝来简化正常写法，比如 def abc（str： string）｛ ｝相当于 def abc(str:String):Unit={  }
+8:懒值， lazy val word＝123 ，在使用的时候才会加载赋值，如果不用即使初始化也不对进行赋值，适合开销较大的初始化语句
+9:throw抛异常表达式的返回值类型为noting，如果一个分支的类型为noting，那么if／else的类型就是另一个分支的类型
+10:try／ catch 语句处理异常，而try／finally语句在异常没有处理时执行某种动作（通常 是清理工作）
+11:关于循环的终止，scala没有break和continue如果想要终止循环1:设置boolean开关标签2:import scala.util.control.Breaks._ , 给循环的代码加上breakable｛｝代码块，在代码块中调用break（）方法。
+
+第三章：
+1: 固定长度的数组用new Array[Int](10),变长数组用 ArrayBuffer[Int](),对于 ArrayBuffer可以用＋＝1，＋＝（1，2，3）在尾端追加一个或者多个元素，也可以用＋＋＝Array(1,2,3),追加任何集合，或者用trimEnd(5), 从尾端移除5个元素
+2:提供初始值的时候不要使用new 直接array(1,2,3,4)
+3：用（）来访问元素 列入arr（3）
+4:用for（elem<- arr）来遍历数组 for(i <- o until (arr.length,2)) 也可以通过reserve倒序遍历如：for(i <- （o until arr.length）.reserve)
+5:用for（elem<-arr if..）.. yield...来将原书组转型给新数组
+6:如果需要二维数组的话，可以Array[Array[Int]](10),或者用 Array.ofDim[Double](3,4)   代表三行四列
+
+
+第四章：
+1:构建一个映射：val map=Map(("xiaoming",1),("xiaoqiang",20));
+2:获取映射中的值：val v＝map（“xiaoming” ；val v＝map.getOrElse（"xiaoqiang",0）:当有xiaoming这个key的时候返回value值，没有的话返回0
+3:更新映射的值，map（“xiaoming”）＝200 ；map＋＝（“xiaoli”，1000）或者map＋＝（“xiaoli”->1ooo）; 移除：map－＝“xiaoqiang”
+4:迭代映射：for（(k,v)<- 映射）处理k和v；迭代v，for（v<-map.values）
+5:和数组或者字符串中的位置不同，元组的各组元是从 1 开始的而不是0
+
+第五章：
+1:在 scala中，类并不声明为public
+2:调用无参数方法是可以加上括号，也可以不加；通常调用改值器方法（即改变对象状态的方法），要加上（），对于取值器方法不加
+3:scala中，每定义一个var 变量，则会有对应的 setter和getter方法，如var age＝0，会有  .age()=21  来赋值， .age 来取值
+4:val age 只生成一个getter 没有setter
+5:通过 private［this］ var value＝0，某个对象.value 这样的访问不被允许，即使是同一个类的对象也不行，除非同一个了类的方法中可以访问；对于类私有的字段不会生成私有的getter和setter
+6:当你的scal字段标注为 @ BeanProperty时，如@BeanProperty var name:String=_ ,会生成四个方法 1:name：String 2:name_=(new Value:String):Unit 3:getName():String 4:setName(new Value:String):Unit
+7: 一个类如果没有显式定义主构造器，则自动拥有一个无参的主构造器
+8:主构造器并不以this方法定义，而是与类定义交织在一起：1：主构造器的参数直接放置在类名之后例如：class  Person(val name:String,val age:Int)  ,(....)里的内容就是主构造器的参数 ；2:主构造器会执行类定义中的所有语句 例如 class Person(val name:String,val age:Int){println("这是主构造器的一部分") ；def description ＝name＋“is”＋age＋“year old” ｝，每当有对象被new出来时，就会执行上述代码
+9：类名之后没有参数，则该类具有一个无参主构造器，这样一个无参构造器仅仅是简单的执行类体中的所有语句
+10:如果不带val 或者var的参数至少被一个方法所使用，他将被提格为字段，并且是不可变字段，这两个字段都是对象私有的
